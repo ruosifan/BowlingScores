@@ -4,6 +4,7 @@ public class CalculateScore {
 	
 	public ArrayList<Frame> game = new ArrayList<Frame>();
 	private static int PERFECT_FRAME_SCORE = 10;
+	private static int MAX_NUM_OF_FRAMES = 10;
 	public int numberOfFrames;
 
 	public CalculateScore(ArrayList<Frame> game){
@@ -14,33 +15,47 @@ public class CalculateScore {
 	public int evaluate(){
 		
 		int totalScore = 0;
-		int counter = game.size();
-		
-		if(numberOfFrames>10){
-			counter = 10;
-		} 
+		int counter = setCounter();
 		
 		for (int i=0; i<counter; i++){
 			String frameType = game.get(i).getType();
-			System.out.println(i + " " + game.get(i).getFirst() + " " + game.get(i).getSecond() + " " + game.get(i).getType());
 			if(frameType.equals("regular")){
-				totalScore += game.get(i).addFirstAndSecond();
+				totalScore += calculateRegular(game.get(i));
 			} else if (frameType.equals("spare")) {
-				totalScore += PERFECT_FRAME_SCORE + game.get(i+1).getFirst();
+				totalScore += calculateSpare(game.get(i+1)); 
 			} else {
-				String nextFrameType = game.get(i + 1).getType();
-				if(nextFrameType.equals("strike")){
-					totalScore += PERFECT_FRAME_SCORE*2 + game.get(i + 2).getFirst();
-				} else {
-					totalScore += PERFECT_FRAME_SCORE + game.get(i + 1).addFirstAndSecond();
-				}
+				totalScore += calculateStrike(game.get(i+1), i+1);
 			}
 		}
 		
 		System.out.println("Your total score is " + totalScore + ".");
 		return totalScore;
 	}
+	
+	public int calculateRegular(Frame frame){
+		return frame.addFirstAndSecond();
+	}
+	
+	public int calculateSpare(Frame nextFrame){
+		return PERFECT_FRAME_SCORE + nextFrame.getFirst();
+	}
+	
+	public int calculateStrike(Frame nextFrame, int indexOfNextFrame){
+		String nextFrameType = game.get(indexOfNextFrame).getType();
+		if(nextFrameType.equals("strike")){
+			return PERFECT_FRAME_SCORE*2 + game.get(indexOfNextFrame+1).getFirst();
+		} else {
+			return PERFECT_FRAME_SCORE + nextFrame.addFirstAndSecond();
+		}
+	}
 
-
+	public int setCounter(){
+		
+		if(numberOfFrames>MAX_NUM_OF_FRAMES){
+			return MAX_NUM_OF_FRAMES;
+		} 
+		
+		return game.size();
+	}
 	
 }

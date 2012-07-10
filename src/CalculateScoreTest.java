@@ -264,5 +264,4 @@ public class CalculateScoreTest {
 		assertEquals(140, calculator.evaluate());
 	}
 
-
 }
